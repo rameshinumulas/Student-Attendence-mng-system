@@ -1,6 +1,8 @@
-import React,{useEffect} from 'react'
+import React,{useEffect,useState} from 'react'
 import axios from 'axios';
 import { useSelector,useDispatch } from 'react-redux';
+import ReactPaginate from 'react-paginate';
+
 
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -12,6 +14,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { Button } from '@material-ui/core';
 import { Delete } from '@material-ui/icons';
+import { Link } from 'react-router-dom';
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -50,10 +53,50 @@ const useStyles = makeStyles((theme)=>({
 
 export default function Teacher_records() {
     const classes = useStyles()
+    const [deleteResponce, setdeleteResponce] = useState(false)
+
 
       const Teachers_state = useSelector(state => state.Te_data)
       console.log(Teachers_state,"ttttt");
       const dispatch = useDispatch()
+
+      const initialState ={
+              offset: 0,
+              tableData: [],
+              orgtableData: [],
+              perPage: 10,
+              currentPage: 0
+      }
+
+      const [tablepage, settablepage] = React.useState(initialState)
+
+    const handlePageClick = (e) => {
+        const selectedPage = e.selected;
+        const offset = selectedPage * tablepage.perPage;
+        console.log(e,offset,selectedPage);
+        settablepage((tablepage)=>({
+          ...tablepage,
+            currentPage: selectedPage,
+            offset: offset
+        }));
+        console.log(e,offset,selectedPage,tablepage.currentPage,tablepage.offset);
+        loadMoreData()
+    };
+
+    const loadMoreData=()=>{
+      const data = tablepage.orgtableData;
+  
+          const slice = data.slice(tablepage.offset,
+             tablepage.offset +
+               tablepage.perPage)
+      console.log("loadmoredaa",slice);
+
+      settablepage((prevState)=>({
+        ...prevState,
+        pageCount: Math.ceil(data.length / tablepage.perPage),
+        tableData:slice
+      }))
+    }
 
     useEffect(async() => {
 
@@ -61,46 +104,62 @@ export default function Teacher_records() {
        const getdata = await axios.get("http://localhost:7000/get/teachers_records")
        console.log(getdata.data.details,"uuu");
        const mainData = getdata.data.details
+       var tdata = mainData;
+      //  console.log('data-->'+JSON.stringify(tdata))
+        var slice =
+         tdata.slice(tablepage.offset,
+            tablepage.offset + tablepage.perPage)
+      settablepage({
+        ...tablepage,
+           pageCount: Math.ceil(tdata.length / tablepage.perPage),
+           orgtableData : tdata,
+           tableData:slice
+       })
        dispatch({type:'TEACHER_RECORDS',payload:mainData})
       } catch (error) {
         console.log(error);
-      }
-    
-    }, [])
+      }  
+    },[])
 
-    const data = [
-        {
-                firstname:'ramesh',
-                lastname:"inumula",
-                DOB:" 01/02/1999",
-                gender: "male",
-                email:"inumularamesh@gmail.com",
-                mobile: 7285978169,
-                address:"vizianagaram",
-                degree:"Msc",
-                salary:20000,
-                action:{update:"Update",delete:"Delete"}
-        },  {
-            firstname:'ramesh',
-            lastname:"inumula",
-            DOB:" 01/02/1999",
-            gender: "male",
-            email:"inumularamesh@gmail.com",
-            mobile: 7285978169,
-            address:"vizianagaram",
-            degree:"PhD",
-            salary:19000,
-            action:{update:"Update",delete:"Delete"}
+    const deleteStudent_record = async(id)=>{
+      console.log(id,"deleteeeee");
+      const deleteData = await axios.delete(`http://localhost:7000/delete_teacher/${id}`)
+     console.log((deleteData.data.delete));
+      setdeleteResponce(deleteData.data.delete)
     }
-            ]
+
+    React.useEffect(async()=>{
+      const delete_getdata = await axios.get('http://localhost:7000/get/teachers_records')
+     
+      console.log(delete_getdata.data.details,"iii");
+      var tdata = delete_getdata.data.details;
+      //  console.log('data-->'+JSON.stringify(tdata))
+        var slice = tdata.slice(tablepage.offset,
+            tablepage.offset + tablepage.perPage)
+      settablepage({
+        ...tablepage,
+           pageCount: Math.ceil(tdata.length / tablepage.perPage),
+           orgtableData : tdata,
+           tableData:slice
+       })
+      dispatch({type:'STUDENTS_RECORDS',payload:delete_getdata.data.details})
+      setdeleteResponce(false)
+      // console.log(state.data,"stattttttttttttttttttttttttttttttttttt");
+      
+    },[deleteResponce])
+
 
     return (
         <div className={classes.tablemarginTop}>
-            <Button variant="contained" color="secondary" classfirstname={classes.insertButton}>+ insert</Button>
+            <Link to ="new_teacher" style={{textDecoration:"none"}}>
+            <Button variant="contained" color="secondary" 
+             classfirstname={classes.insertButton}>+ insert</Button>
+             </Link>
             <TableContainer component={Paper}>
                 <Table classfirstname={classes.table} aria-label="customized table">
                     <TableHead>
                     <TableRow>
+                        <StyledTableCell>Roll no</StyledTableCell>
                         <StyledTableCell>firstname</StyledTableCell>
                         <StyledTableCell>Lastname</StyledTableCell>
                         <StyledTableCell align="center">DOB</StyledTableCell>
@@ -111,12 +170,14 @@ export default function Teacher_records() {
                         <StyledTableCell align="center">salary&nbsp;</StyledTableCell>
                         <StyledTableCell align="center">Action&nbsp;</StyledTableCell>
                         <StyledTableCell align="center">Address&nbsp;</StyledTableCell>
-
                     </TableRow>
                     </TableHead>
                     <TableBody>
-                    {Teachers_state.map((row) => (
+                    {tablepage.tableData.map((row) => (
                         <StyledTableRow key={row.firstname}>
+                        <StyledTableCell component="th" scope="row">
+                            {row.roll_no}
+                        </StyledTableCell>
                         <StyledTableCell component="th" scope="row">
                             {row.firstname}
                         </StyledTableCell>
@@ -129,15 +190,29 @@ export default function Teacher_records() {
                         <StyledTableCell align="right">{row.salary}</StyledTableCell>
                         <StyledTableCell align="right">{row.address}</StyledTableCell>
                         <StyledTableCell align="right" style={{display:"flex"}}>
-                            <Button variant="contained" color="secondary">Update</Button>
-                            <Button variant="contained" 
-                            style={{backgroundColor:"#28CE22",color:"#FFFFFF"}}>Delete</Button>
+                            <Button variant="contained"
+                            style={{backgroundColor:"#28CE22",color:"#FFFFFF"}}>Update</Button>
+                            <Button variant="contained"  color="secondary"
+                            onClick={()=>deleteStudent_record(row._id)}
+                            >Delete</Button>
                         </StyledTableCell>
                         </StyledTableRow>
                     ))}
                     </TableBody>
                 </Table>
                 </TableContainer>  
+                <ReactPaginate
+                    previousLabel={"prev"}
+                    nextLabel={"next"}
+                    breakLabel={"..."}
+                    breakClassName={"break-me"}
+                    pageCount={tablepage.pageCount}
+                    marginPagesDisplayed={2}
+                    pageRangeDisplayed={5}
+                    onPageChange={handlePageClick}
+                    containerClassName={"pagination"}
+                    subContainerClassName={"pages pagination"}
+                    activeClassName={"active"}/>
         </div>
     )
 }

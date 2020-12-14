@@ -21,21 +21,20 @@ const useStyles = makeStyles(theme=>({
 }))
 
   
-export default function Student_new_record(props) {
+export default function New_Teacher(props) {
   const [ismodal, setismodal] = useState(false)
   console.log(props,"ttttttt");
     const classes = useStyles()
     let history = useHistory();
     const initialState = {
-        roll_no:'',
-        name:'',
+        firstname:'',
+        lastname:'',
         DOB:'',
         gender:'',
         email:'',
         address:'',
         mobile:"",
-        session:"",
-        program:'',
+        degree:'',
     }
 const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -47,12 +46,11 @@ const theme = useTheme();
         [e.target.name]:e.target.value})
         // console.log(record,"sssss");
     }
-    const hanleNewrecord =()=>{
+    const handlenew_teacher_record =()=>{
         console.log(record);
-        history.push('/Students')
-        
-        const newstu_record = axios.post('http://localhost:7000/student_records',record)
-        console.log(newstu_record);
+        history.push('/Teachers')
+        const newteacher_record = axios.post('http://localhost:7000/teachersRecords',record)
+        console.log(newteacher_record);
 
     }
     // console.log(window.location.pathname,"lllllllllll");
@@ -73,14 +71,12 @@ const theme = useTheme();
                   aria-labelledby="alert-dialog-title"
                   aria-describedby="alert-dialog-description"
                 >
-                  <DialogTitle id="alert-dialog-title">{"Insert new Student record"}</DialogTitle>
+                  <DialogTitle id="alert-dialog-title">{"Insert Teacher record"}</DialogTitle>
                   <DialogContent  className={classes.modalTop}>
-                  {/* <Student_new_record modalprops={modalClose} />     */}
             
             <Container maxWidth="sm" className="st_reg_cont">
-            {/* <Typography variant="h4" >Insert new Student record</Typography> */}
             <Grid container>
-                {['name',"email","session",].map(item=>
+                {['firstname',"lastname","email",].map(item=>
                 <Grid item xs={6} className="input_grids">
                 <TextField
                     name={item}
@@ -92,8 +88,6 @@ const theme = useTheme();
                 />
                 </Grid>
                     )}
-                  
-                 
                     <Grid item xs={6} >
                     <TextField
                         id="date"
@@ -118,15 +112,15 @@ const theme = useTheme();
                 <TextField
                     id="standard-select-currency"
                     select
-                    label="program"
-                    name="program"
-                    value={record.program}
+                    label="Degree"
+                    name="degree"
+                    value={record.degree}
                     onChange={handleInputfields}
                     variant="outlined"
                     size="small"
                     style={{width:'80%'}}
                     >
-                    {["BSc","B.A","MSC","MBA","BCOM","CBZ"].map((option) => (
+                    {["MSc","PHD","MCA","MBA"].map((option) => (
                         <MenuItem key={option} value={option}>
                         {option}
                         </MenuItem>
@@ -138,6 +132,19 @@ const theme = useTheme();
                         id="number"
                         name="mobile"
                         label="mobile number"
+                        type="number"
+                        variant="outlined"
+                        size="small"
+                        // className={classes.textField}
+                    onChange={handleInputfields}
+                       
+                    /> 
+                </Grid>
+                <Grid item xs={6}  className="input_grids">
+                <TextField
+                        id="salary"
+                        name="salary"
+                        label="Salary"
                         type="number"
                         variant="outlined"
                         size="small"
@@ -182,11 +189,11 @@ const theme = useTheme();
                     /> 
                     </Grid>
 
-                     <Button variant="contained" 
-                     onClick={hanleNewrecord}
-                     style={{backgroundColor:"#28CE22",color:"#FFFFFF"}}
+                    <Button variant="contained" 
+                     onClick={handlenew_teacher_record}
+                     style={{backgroundColor:"#28CE22",color:"#FFFFFF",height:40}}
                    >Save</Button>
-                    <Link to="/Students" style={{textDecoration:"none"}}> 
+                    <Link to="/Teachers" style={{textDecoration:"none"}}> 
                     <Button variant="contained" color="secondary" 
                     >Cancel</Button>
                     </Link> 
