@@ -3,6 +3,7 @@ import { Provider } from 'react-redux';
 import './App.css';
 import store from './REDUX/Store';
 import Routsfile from './Routing/Routsfile';
+import Attendence from './views/Attendence/Attendence';
 import Collegeimg from './views/images/Collegeimg';
 import Menubar from './views/Menubar';
 

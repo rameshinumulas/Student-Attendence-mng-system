@@ -1,6 +1,8 @@
 import React from 'react'
 import { Route, Switch } from 'react-router-dom/cjs/react-router-dom.min'
 import Adminmenu from '../Admincomponents/Adminmenu'
+import Attendence from '../views/Attendence/Attendence'
+import DublicateAtt from '../views/Attendence/DublicateAtt'
 import Login from '../views/Authpages/Login'
 import Menubar from '../views/Menubar'
 import Entries from '../views/menuViews/Entries'
@@ -31,6 +33,8 @@ export default function Routsfile() {
                 <Route exact path ="/new_teacher" component={New_Teacher} />
                 <Route exact path = "/update" component={Stu_update}/>
                 <Route exact path = "/new_subject" component={New_subject}/>
+                <Route exact path = "/Do Attentence" component={Attendence} />
+                {/* <Route exact path = "/Do Attentence" component={DublicateAtt} /> */}
             </Switch> 
         </div>
     )

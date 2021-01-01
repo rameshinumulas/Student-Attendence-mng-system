@@ -11,7 +11,7 @@ ReactDOM.render(
     <App />
   </React.StrictMode>
   </BrowserRouter>,
-  document.getElementById('root')
+  document.body
 );
 
 // If you want your app to work offline and load faster, you can change

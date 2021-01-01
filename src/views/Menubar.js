@@ -1,4 +1,4 @@
-import React,{useState} from  'react';
+import React,{useState,useHistory} from  'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -126,6 +126,8 @@ export default function Menubar() {
   const mobileMenuId = 'primary-search-account-menu-mobile';
 
   const handleLogins = (text)=>{
+    setMobileMoreAnchorEl(false)
+    // history.push({`/${text}`})
       console.log(text,"tttttttttt");
       if(text === "Entries"){
         setopenEntries(true)
@@ -172,13 +174,16 @@ export default function Menubar() {
           </Grid>
           <Drawer anchor="right" open={mobileMoreAnchorEl} onClose={handleMobileMenuClose}>
           <List>
-        {['Home',"Students","Teachers","Subjects","Monthly Report","Overal Report","Do Attentence"].map((text, index) => (
+        {['Home',"Students","Teachers","Subjects","Monthly Report",
+        "Overal Report","Do Attentence"].map((text, index) => (
+          <Link to ={`/${text}`}>
           <ListItem button key={text} onClick={()=>handleLogins(text)}>
             {/* <ListItemIcon></ListItemIcon> */}
             <ListItemText primary={text} />
           </ListItem>
+          </Link>
         ))}
-      </List>
+        </List>
           </Drawer>
         </Toolbar>
       </AppBar>
